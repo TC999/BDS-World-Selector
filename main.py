@@ -18,13 +18,14 @@ class ConfigSwitcherApp(QMainWindow):
         self.init_menu()
 
     def init_ui(self):
-        self.setWindowTitle(self.tr("基岩版服务端存档切换器"))
+        self.setWindowTitle(self.tr("基岩版服务端存档切换器")) # 标题
 
         # 设置窗口初始大小
         self.resize(800, 600)
 
         layout = QVBoxLayout()
 
+        # 显示面板
         # Server Name
         server_name_label = QLabel(self.tr("服务器名称"), self)
         layout.addWidget(server_name_label)
@@ -100,10 +101,11 @@ class ConfigSwitcherApp(QMainWindow):
 
         self.setMenuBar(menu_bar)
 
-    def open_bug_report_url(self):
+    def open_bug_report_url(self): # BUG反馈
         url = QUrl("https://github.com/TC999/BDS-World-Selector/issues")
         QDesktopServices.openUrl(url)
 
+    # 值更改区域
     def read_server_name(self):
         if os.path.exists(self.config_file_path):
             with open(self.config_file_path, 'r', encoding='utf-8') as f:
@@ -111,6 +113,7 @@ class ConfigSwitcherApp(QMainWindow):
                     if line.startswith("server-name="):
                         return line.split("=", 1)[1].strip()
         return ""
+
 
     def save_server_name(self):
         new_server_name = self.server_name_edit.text().strip()

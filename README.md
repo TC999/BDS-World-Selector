@@ -51,10 +51,9 @@
     ·
     <a href="https://github.com/TC999/BDS-World-Selector/issues">反馈 BUG</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md">功能请求</a>
   </p>
 </div>
-
 
 
 <!-- TABLE OF CONTENTS -->
@@ -63,21 +62,24 @@
   <ol>
     <li>
       <a href="#关于此项目">关于此项目</a>
-      <ul>
+      <!--ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
+      -->
     </li>
     <li>
       <a href="#getting-started">快速开始</a>
+      <!---
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
+      -->
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
+    <li><a href="#贡献">贡献</a></li>
+    <li><a href="#许可证">许可证</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -87,7 +89,15 @@
 
 <!-- ABOUT THE PROJECT -->
 ## 关于此项目
-这是一个用于可视化更改 BDS 配置文件的程序，
+这是一个用于可视化更改 BDS 配置文件的程序，用于快速切换存档，支持多存档不同设置，不再一个个手打！
+本项目采用 ChatGPT4o 编写，代码质量一般，如有可优化空间，请直接提交拉取请求！
+
+- 当前已实现更改：
+    - [x] 服务器名
+    - [x] 游戏模式
+    - [x] 强制游戏模式
+    - [ ] 种子更改
+    - [ ] 最大在线人数
 
 ## 快速开始
 暂无打算发布二进制文件，请使用源码运行
@@ -102,10 +112,27 @@ https://github.com/TC999/BDS-World-Selector.git
 3. 将仓库内的`main.py`文件拷贝到您的 BDS 服务端目录下
 
 4. 安装依赖
-```
+```python
 pip install PyQt5
 ```
 
 5. 运行 `main.py`
+
+## 贡献
+<!---
+> [!IMPORTANT]
+> 请提前设置GPG密钥，具体操作请查看[Github官方文档][github-doc-gpg-url]
+-->
+1. 复刻`(Fork)`此仓库
+2. 创建一个分支`(Branch)`并以你修改的功能命名
+3. 将代码拉到本地修改并提交`(Commit)`
+4. 创建一个拉取请求`(Pull Request)`
+
+## ✔ 待办(TODO)
+
+- [ ] 更多选项
+- [ ] 多语言适配（暂时只支持简体中文）
+- [ ] 代码优化
+
 ## 许可证
-本项目采用 GPL3 许可证。
+本项目采用 [GPL3 许可证](LICENSE)。
