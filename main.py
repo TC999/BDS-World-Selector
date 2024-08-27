@@ -20,6 +20,9 @@ class ConfigSwitcherApp(QMainWindow):
     def init_ui(self):
         self.setWindowTitle(self.tr("基岩版服务端存档切换器"))
 
+        # 设置窗口初始大小
+        self.resize(800, 600)
+
         layout = QVBoxLayout()
 
         # Server Name
