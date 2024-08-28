@@ -1,10 +1,11 @@
-import sys
 import os
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout,
-                             QWidget, QLineEdit, QLabel, QPushButton, QMessageBox, QComboBox, QCheckBox, QTextEdit, QHBoxLayout)
-from PyQt5.QtGui import QIntValidator
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
+import sys
+
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QComboBox, QCheckBox, QFormLayout, QMessageBox, QSpacerItem, QSizePolicy,
+    QMenuBar, QAction, QMenu
+)
 
 class ConfigSwitcherApp(QMainWindow):
     def __init__(self):
@@ -12,6 +13,8 @@ class ConfigSwitcherApp(QMainWindow):
 
         self.config_file_path = "server.properties"  # 假设配置文件路径
         self.worlds_dir = "worlds"  # 假设存档文件夹路径
+
+        # 初始化配置
         self.server_name = self.read_server_name()
         self.gamemode = self.read_gamemode()
         self.force_gamemode = self.read_force_gamemode()
@@ -21,171 +24,128 @@ class ConfigSwitcherApp(QMainWindow):
         self.online_mode = self.read_online_mode()
         self.allow_list = self.read_allow_list()
         self.level_name = self.read_level_name()
+        self.server_port = ""  # 初始化为默认值或从配置中读取
+        self.server_portv6 = ""  # 初始化为默认值或从配置中读取
 
         self.init_ui()
         self.init_menu()
 
     def init_ui(self):
-        self.setWindowTitle(self.tr("基岩版服务端存档切换器"))
-
-        # 设置窗口初始大小
-        self.resize(800, 600)
-
-        layout = QVBoxLayout()
-
-        # Server Name
-        server_name_layout = QHBoxLayout()
-        server_name_label = QLabel(self.tr("服务器名称"), self)
-        server_name_layout.addWidget(server_name_label)
-
-        self.server_name_edit = QLineEdit(self)
-        self.server_name_edit.setText(self.server_name)
-        server_name_layout.addWidget(self.server_name_edit)
-
-        save_button = QPushButton(self.tr("保存"), self)
-        save_button.clicked.connect(self.save_server_name)
-        server_name_layout.addWidget(save_button)
-
-        layout.addLayout(server_name_layout)
-
-        # Gamemode
-        gamemode_layout = QHBoxLayout()
-        gamemode_label = QLabel(self.tr("游戏模式"), self)
-        gamemode_layout.addWidget(gamemode_label)
-
-        self.gamemode_combo = QComboBox(self)
-        self.gamemode_combo.addItems([self.tr("创造"), self.tr("生存"), self.tr("冒险")])
-        self.gamemode_combo.setCurrentText(self.get_gamemode_display_name(self.gamemode))
-        gamemode_layout.addWidget(self.gamemode_combo)
-
-        save_gamemode_button = QPushButton(self.tr("保存游戏模式"), self)
-        save_gamemode_button.clicked.connect(self.save_gamemode)
-        gamemode_layout.addWidget(save_gamemode_button)
-
-        layout.addLayout(gamemode_layout)
-
-        # Difficulty
-        difficulty_layout = QHBoxLayout()
-        difficulty_label = QLabel(self.tr("难度"), self)
-        difficulty_layout.addWidget(difficulty_label)
-
-        self.difficulty_combo = QComboBox(self)
-        self.difficulty_combo.addItems([self.tr("困难"), self.tr("普通"), self.tr("简单"), self.tr("和平")])
-        self.difficulty_combo.setCurrentText(self.get_difficulty_display_name(self.difficulty))
-        difficulty_layout.addWidget(self.difficulty_combo)
-
-        save_difficulty_button = QPushButton(self.tr("保存难度"), self)
-        save_difficulty_button.clicked.connect(self.save_difficulty)
-        difficulty_layout.addWidget(save_difficulty_button)
-
-        layout.addLayout(difficulty_layout)
-
-        # Force Gamemode
-        force_gamemode_layout = QHBoxLayout()
-        force_gamemode_label = QLabel(self.tr("强制游戏模式"), self)
-        force_gamemode_layout.addWidget(force_gamemode_label)
-
-        self.force_gamemode_checkbox = QCheckBox(self.tr("启用"), self)
-        self.force_gamemode_checkbox.setChecked(self.force_gamemode == "true")
-        self.force_gamemode_checkbox.stateChanged.connect(self.save_force_gamemode)
-        force_gamemode_layout.addWidget(self.force_gamemode_checkbox)
-
-        layout.addLayout(force_gamemode_layout)
-
-        force_gamemode_info = QTextEdit(self)
-        force_gamemode_info.setReadOnly(True)
-        force_gamemode_info.setHtml(self.tr(
-            "<p>若关闭会防止服务器向客户端发送游戏模式值，而不是在创建世界时服务器保存的游戏模式值，即使这些值是在服务器中设置的。创建世界之后的属性。</p>"
-            "<p>若开启强制服务器向客户端发送游戏模式值，而不是服务器在创建世界时保存的游戏模式值，如果这些值是服务器设置的。创建世界之后的属性。</p>"
-        ))
-        force_gamemode_info.setMaximumHeight(100)  # 设置最大高度
-        layout.addWidget(force_gamemode_info)
-
-        # Allow Cheats
-        allow_cheats_layout = QHBoxLayout()
-        allow_cheats_label = QLabel(self.tr("允许作弊"), self)
-        allow_cheats_layout.addWidget(allow_cheats_label)
-
-        self.allow_cheats_checkbox = QCheckBox(self.tr("启用"), self)
-        self.allow_cheats_checkbox.setChecked(self.allow_cheats == "true")
-        self.allow_cheats_checkbox.stateChanged.connect(self.save_allow_cheats)
-        allow_cheats_layout.addWidget(self.allow_cheats_checkbox)
-
-        layout.addLayout(allow_cheats_layout)
-
-        # Max Players
-        max_players_layout = QHBoxLayout()
-        max_players_label = QLabel(self.tr("人数上限"), self)
-        max_players_layout.addWidget(max_players_label)
-
-        self.max_players_edit = QLineEdit(self)
-        self.max_players_edit.setText(self.max_players)
-        self.max_players_edit.setValidator(QIntValidator(1, 10000, self))  # 限定为正整数
-        max_players_layout.addWidget(self.max_players_edit)
-
-        save_max_players_button = QPushButton(self.tr("保存人数上限"), self)
-        save_max_players_button.clicked.connect(self.save_max_players)
-        max_players_layout.addWidget(save_max_players_button)
-
-        layout.addLayout(max_players_layout)
-
-        # Online Mode
-        online_mode_layout = QHBoxLayout()
-        online_mode_label = QLabel(self.tr("正版验证"), self)
-        online_mode_layout.addWidget(online_mode_label)
-
-        self.online_mode_checkbox = QCheckBox(self.tr("启用"), self)
-        self.online_mode_checkbox.setChecked(self.online_mode == "true")
-        self.online_mode_checkbox.stateChanged.connect(self.save_online_mode)
-        online_mode_layout.addWidget(self.online_mode_checkbox)
-
-        layout.addLayout(online_mode_layout)
-
-        # Allow List
-        allow_list_layout = QHBoxLayout()
-        allow_list_label = QLabel(self.tr("白名单"), self)
-        allow_list_layout.addWidget(allow_list_label)
-
-        self.allow_list_checkbox = QCheckBox(self.tr("启用"), self)
-        self.allow_list_checkbox.setChecked(self.allow_list == "true")
-        self.allow_list_checkbox.stateChanged.connect(self.save_allow_list)
-        allow_list_layout.addWidget(self.allow_list_checkbox)
-
-        layout.addLayout(allow_list_layout)
-
-        # World Switcher
-        world_switcher_layout = QHBoxLayout()
-        world_switcher_label = QLabel(self.tr("存档切换"), self)
-        world_switcher_layout.addWidget(world_switcher_label)
-
-        self.world_combo = QComboBox(self)
-        self.load_worlds()
-        self.world_combo.setCurrentText(self.level_name if self.level_name in self.world_folders else self.tr("该存档不存在"))
-        world_switcher_layout.addWidget(self.world_combo)
-
-        save_world_button = QPushButton(self.tr("保存存档"), self)
-        save_world_button.clicked.connect(self.save_level_name)
-        world_switcher_layout.addWidget(save_world_button)
-
-        layout.addLayout(world_switcher_layout)
-
-        # Central widget
-        central_widget = QWidget(self)
-        central_widget.setLayout(layout)
+        central_widget = QWidget()
         self.setCentralWidget(central_widget)
+
+        layout = QVBoxLayout(central_widget)
+        form_layout = QFormLayout()
+
+        # 服务器名称
+        self.server_name_edit = QLineEdit()
+        self.server_name_edit.setText(self.server_name)
+        self.server_name_save_button = QPushButton("保存")
+        self.server_name_save_button.clicked.connect(self.save_server_name)
+        form_layout.addRow(QLabel("服务器名称:"), self.server_name_edit)
+        form_layout.addWidget(self.server_name_save_button)
+
+        # 存档切换
+        self.world_combo = QComboBox()
+        self.load_worlds()  # Load worlds to populate combo box
+        self.world_save_button = QPushButton("保存")
+        self.world_save_button.clicked.connect(self.save_level_name)
+        form_layout.addRow(QLabel("存档切换:"), self.world_combo)
+        form_layout.addWidget(self.world_save_button)
+
+        layout.addLayout(form_layout)
+
+        # 游戏模式
+        self.gamemode_combo = QComboBox()
+        self.gamemode_combo.addItems(["创造", "生存", "冒险"])
+        self.gamemode_combo.setCurrentText(self.gamemode)
+        self.gamemode_save_button = QPushButton("保存")
+        self.gamemode_save_button.clicked.connect(self.save_gamemode)
+        form_layout.addRow(QLabel("游戏模式:"), self.gamemode_combo)
+        form_layout.addWidget(self.gamemode_save_button)
+
+        # 强制游戏模式
+        self.force_gamemode_checkbox = QCheckBox()
+        self.force_gamemode_checkbox.setChecked(self.force_gamemode == "true")
+        self.force_gamemode_save_button = QPushButton("保存")
+        self.force_gamemode_save_button.clicked.connect(self.save_force_gamemode)
+        form_layout.addRow(QLabel("强制游戏模式:"), self.force_gamemode_checkbox)
+        form_layout.addWidget(self.force_gamemode_save_button)
+
+        # 难度
+        self.difficulty_combo = QComboBox()
+        self.difficulty_combo.addItems(["困难", "普通", "简单", "和平"])
+        self.difficulty_combo.setCurrentText(self.difficulty)
+        self.difficulty_save_button = QPushButton("保存")
+        self.difficulty_save_button.clicked.connect(self.save_difficulty)
+        form_layout.addRow(QLabel("难度:"), self.difficulty_combo)
+        form_layout.addWidget(self.difficulty_save_button)
+
+        # 允许作弊
+        self.allow_cheats_checkbox = QCheckBox()
+        self.allow_cheats_checkbox.setChecked(self.allow_cheats == "true")
+        self.allow_cheats_save_button = QPushButton("保存")
+        self.allow_cheats_save_button.clicked.connect(self.save_allow_cheats)
+        form_layout.addRow(QLabel("允许作弊:"), self.allow_cheats_checkbox)
+        form_layout.addWidget(self.allow_cheats_save_button)
+
+        # 人数上限
+        self.max_players_edit = QLineEdit()
+        self.max_players_edit.setText(self.max_players)
+        self.max_players_save_button = QPushButton("保存")
+        self.max_players_save_button.clicked.connect(self.save_max_players)
+        form_layout.addRow(QLabel("人数上限:"), self.max_players_edit)
+        form_layout.addWidget(self.max_players_save_button)
+
+        # 正版验证
+        self.online_mode_checkbox = QCheckBox()
+        self.online_mode_checkbox.setChecked(self.online_mode == "true")
+        self.online_mode_save_button = QPushButton("保存")
+        self.online_mode_save_button.clicked.connect(self.save_online_mode)
+        form_layout.addRow(QLabel("正版验证:"), self.online_mode_checkbox)
+        form_layout.addWidget(self.online_mode_save_button)
+
+        # 白名单
+        self.allow_list_checkbox = QCheckBox()
+        self.allow_list_checkbox.setChecked(self.allow_list == "true")
+        self.allow_list_save_button = QPushButton("保存")
+        self.allow_list_save_button.clicked.connect(self.save_allow_list)
+        form_layout.addRow(QLabel("白名单:"), self.allow_list_checkbox)
+        form_layout.addWidget(self.allow_list_save_button)
+
+        # IPV4 地址(有 BUG)
+        self.ipv4_edit = QLineEdit()
+        self.ipv4_edit.setPlaceholderText("输入 1 至 65535 的正整数")
+        self.ipv4_edit.setText(self.server_port)
+        self.ipv4_save_button = QPushButton("保存")
+        self.ipv4_save_button.clicked.connect(self.save_server_port)
+        form_layout.addRow(QLabel("IPV4 地址:"), self.ipv4_edit)
+        form_layout.addWidget(self.ipv4_save_button)
+
+        # IPV6 地址(有 BUG)
+        self.ipv6_edit = QLineEdit()
+        self.ipv6_edit.setPlaceholderText("输入 1 至 65535 的正整数")
+        self.ipv6_edit.setText(self.server_portv6)
+        self.ipv6_save_button = QPushButton("保存")
+        self.ipv6_save_button.clicked.connect(self.save_server_portv6)
+        form_layout.addRow(QLabel("IPV6 地址:"), self.ipv6_edit)
+        form_layout.addWidget(self.ipv6_save_button)
+
+        self.setWindowTitle("基岩版服务端存档切换器")
+        self.setGeometry(100, 100, 600, 600)  # 设置初始窗口大小
 
     def init_menu(self):
         menu_bar = QMenuBar(self)
 
-        # Switch Menu
+        # Switch Menu 切换
         switch_menu = QMenu(self.tr("切换"), self)
         menu_bar.addMenu(switch_menu)
 
-        # Language Menu
+        # Language Menu 语言（暂未实现）
         language_menu = QMenu(self.tr("语言"), self)
         menu_bar.addMenu(language_menu)
 
-        # About Menu
+        # About Menu 关于
         about_menu = QMenu(self.tr("关于"), self)
 
         feedback_action = QAction(self.tr("反馈BUG"), self)
@@ -202,10 +162,11 @@ class ConfigSwitcherApp(QMainWindow):
 
         self.setMenuBar(menu_bar)
 
-    def open_bug_report_url(self):
+    def open_bug_report_url(self): # 反馈BUG
         url = QUrl("https://github.com/TC999/BDS-World-Selector/issues")
         QDesktopServices.openUrl(url)
 
+    # 读取
     def read_server_name(self):
         if os.path.exists(self.config_file_path):
             with open(self.config_file_path, 'r', encoding='utf-8') as f:
@@ -468,6 +429,51 @@ class ConfigSwitcherApp(QMainWindow):
         else:
             self.world_folders = []
             self.world_combo.addItem(self.tr("存档文件夹不存在"))
+
+        # 保存 IPV4 地址
+
+    def read_server_port(self):
+        """读取 'server-port=' 配置项"""
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.startswith("server-port="):
+                    return line.split("=")[1].strip()
+        return ""
+
+    def read_server_portv6(self):
+        """读取 'server-portv6=' 配置项"""
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.startswith("server-portv6="):
+                    return line.split("=")[1].strip()
+        return ""
+
+    def save_server_port(self):
+        """保存 'server-port=' 配置项"""
+        new_port = self.server_port_edit.text()
+        self.save_config("server-port=", new_port)
+
+    def save_server_portv6(self):
+        """保存 'server-portv6=' 配置项"""
+        new_portv6 = self.server_portv6_edit.text()
+        self.save_config("server-portv6=", new_portv6)
+
+    def save_config(self, key, value):
+        """保存配置项到文件"""
+        lines = []
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            found = False
+            for line in lines:
+                if line.startswith(key):
+                    f.write(f"{key}{value}\n")
+                    found = True
+                else:
+                    f.write(line)
+            if not found:
+                f.write(f"{key}{value}\n")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
