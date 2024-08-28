@@ -11,12 +11,16 @@ class ConfigSwitcherApp(QMainWindow):
         super().__init__()
 
         self.config_file_path = "server.properties"  # 假设配置文件路径
+        self.worlds_dir = "worlds"  # 假设存档文件夹路径
         self.server_name = self.read_server_name()
         self.gamemode = self.read_gamemode()
         self.force_gamemode = self.read_force_gamemode()
         self.difficulty = self.read_difficulty()
         self.allow_cheats = self.read_allow_cheats()
         self.max_players = self.read_max_players()
+        self.online_mode = self.read_online_mode()
+        self.allow_list = self.read_allow_list()
+        self.level_name = self.read_level_name()
 
         self.init_ui()
         self.init_menu()
@@ -125,6 +129,46 @@ class ConfigSwitcherApp(QMainWindow):
 
         layout.addLayout(max_players_layout)
 
+        # Online Mode
+        online_mode_layout = QHBoxLayout()
+        online_mode_label = QLabel(self.tr("正版验证"), self)
+        online_mode_layout.addWidget(online_mode_label)
+
+        self.online_mode_checkbox = QCheckBox(self.tr("启用"), self)
+        self.online_mode_checkbox.setChecked(self.online_mode == "true")
+        self.online_mode_checkbox.stateChanged.connect(self.save_online_mode)
+        online_mode_layout.addWidget(self.online_mode_checkbox)
+
+        layout.addLayout(online_mode_layout)
+
+        # Allow List
+        allow_list_layout = QHBoxLayout()
+        allow_list_label = QLabel(self.tr("白名单"), self)
+        allow_list_layout.addWidget(allow_list_label)
+
+        self.allow_list_checkbox = QCheckBox(self.tr("启用"), self)
+        self.allow_list_checkbox.setChecked(self.allow_list == "true")
+        self.allow_list_checkbox.stateChanged.connect(self.save_allow_list)
+        allow_list_layout.addWidget(self.allow_list_checkbox)
+
+        layout.addLayout(allow_list_layout)
+
+        # World Switcher
+        world_switcher_layout = QHBoxLayout()
+        world_switcher_label = QLabel(self.tr("存档切换"), self)
+        world_switcher_layout.addWidget(world_switcher_label)
+
+        self.world_combo = QComboBox(self)
+        self.load_worlds()
+        self.world_combo.setCurrentText(self.level_name if self.level_name in self.world_folders else self.tr("该存档不存在"))
+        world_switcher_layout.addWidget(self.world_combo)
+
+        save_world_button = QPushButton(self.tr("保存存档"), self)
+        save_world_button.clicked.connect(self.save_level_name)
+        world_switcher_layout.addWidget(save_world_button)
+
+        layout.addLayout(world_switcher_layout)
+
         # Central widget
         central_widget = QWidget(self)
         central_widget.setLayout(layout)
@@ -171,21 +215,19 @@ class ConfigSwitcherApp(QMainWindow):
         return ""
 
     def save_server_name(self):
-        new_server_name = self.server_name_edit.text().strip()
-        if new_server_name:
-            with open(self.config_file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+        server_name_value = self.server_name_edit.text().strip()
 
-            with open(self.config_file_path, 'w', encoding='utf-8') as f:
-                for line in lines:
-                    if line.startswith("server-name="):
-                        f.write(f"server-name={new_server_name}\n")
-                    else:
-                        f.write(line)
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
 
-            QMessageBox.information(self, self.tr("保存成功"), self.tr("服务器名称已更新。"))
-        else:
-            QMessageBox.warning(self, self.tr("保存失败"), self.tr("服务器名称不能为空。"))
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("server-name="):
+                    f.write(f"server-name={server_name_value}\n")
+                else:
+                    f.write(line)
+
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("服务器名称已更新。"))
 
     def read_gamemode(self):
         if os.path.exists(self.config_file_path):
@@ -193,24 +235,23 @@ class ConfigSwitcherApp(QMainWindow):
                 for line in f:
                     if line.startswith("gamemode="):
                         return line.split("=", 1)[1].strip()
-        return "survival"  # 默认值
+        return "creative"
 
     def save_gamemode(self):
         selected_gamemode = self.gamemode_combo.currentText()
         gamemode_value = self.get_gamemode_value(selected_gamemode)
 
-        if gamemode_value:
-            with open(self.config_file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
 
-            with open(self.config_file_path, 'w', encoding='utf-8') as f:
-                for line in lines:
-                    if line.startswith("gamemode="):
-                        f.write(f"gamemode={gamemode_value}\n")
-                    else:
-                        f.write(line)
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("gamemode="):
+                    f.write(f"gamemode={gamemode_value}\n")
+                else:
+                    f.write(line)
 
-            QMessageBox.information(self, self.tr("保存成功"), self.tr("游戏模式已更新。"))
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("游戏模式已更新。"))
 
     def get_gamemode_display_name(self, gamemode_value):
         if gamemode_value == "creative":
@@ -219,7 +260,7 @@ class ConfigSwitcherApp(QMainWindow):
             return self.tr("生存")
         elif gamemode_value == "adventure":
             return self.tr("冒险")
-        return self.tr("生存")  # 默认显示为“生存”
+        return self.tr("生存")
 
     def get_gamemode_value(self, display_name):
         if display_name == self.tr("创造"):
@@ -228,7 +269,7 @@ class ConfigSwitcherApp(QMainWindow):
             return "survival"
         elif display_name == self.tr("冒险"):
             return "adventure"
-        return "survival"  # 默认值
+        return "survival"
 
     def read_force_gamemode(self):
         if os.path.exists(self.config_file_path):
@@ -236,23 +277,22 @@ class ConfigSwitcherApp(QMainWindow):
                 for line in f:
                     if line.startswith("force-gamemode="):
                         return line.split("=", 1)[1].strip()
-        return "false"  # 默认值
+        return "false"
 
     def save_force_gamemode(self):
         force_gamemode_value = "true" if self.force_gamemode_checkbox.isChecked() else "false"
 
-        if force_gamemode_value:
-            with open(self.config_file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
 
-            with open(self.config_file_path, 'w', encoding='utf-8') as f:
-                for line in lines:
-                    if line.startswith("force-gamemode="):
-                        f.write(f"force-gamemode={force_gamemode_value}\n")
-                    else:
-                        f.write(line)
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("force-gamemode="):
+                    f.write(f"force-gamemode={force_gamemode_value}\n")
+                else:
+                    f.write(line)
 
-            QMessageBox.information(self, self.tr("保存成功"), self.tr("强制游戏模式已更新。"))
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("强制游戏模式已更新。"))
 
     def read_difficulty(self):
         if os.path.exists(self.config_file_path):
@@ -262,24 +302,23 @@ class ConfigSwitcherApp(QMainWindow):
                         difficulty = line.split("=", 1)[1].strip()
                         if difficulty in ["hard", "normal", "easy", "peaceful"]:
                             return difficulty
-        return "normal"  # 默认值
+        return "normal"
 
     def save_difficulty(self):
         selected_difficulty = self.difficulty_combo.currentText()
         difficulty_value = self.get_difficulty_value(selected_difficulty)
 
-        if difficulty_value:
-            with open(self.config_file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
 
-            with open(self.config_file_path, 'w', encoding='utf-8') as f:
-                for line in lines:
-                    if line.startswith("difficulty="):
-                        f.write(f"difficulty={difficulty_value}\n")
-                    else:
-                        f.write(line)
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("difficulty="):
+                    f.write(f"difficulty={difficulty_value}\n")
+                else:
+                    f.write(line)
 
-            QMessageBox.information(self, self.tr("保存成功"), self.tr("难度已更新。"))
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("难度已更新。"))
 
     def get_difficulty_display_name(self, difficulty_value):
         if difficulty_value == "hard":
@@ -290,7 +329,7 @@ class ConfigSwitcherApp(QMainWindow):
             return self.tr("简单")
         elif difficulty_value == "peaceful":
             return self.tr("和平")
-        return self.tr("普通")  # 默认显示为“普通”
+        return self.tr("普通")
 
     def get_difficulty_value(self, display_name):
         if display_name == self.tr("困难"):
@@ -301,7 +340,7 @@ class ConfigSwitcherApp(QMainWindow):
             return "easy"
         elif display_name == self.tr("和平"):
             return "peaceful"
-        return "normal"  # 默认值
+        return "normal"
 
     def read_allow_cheats(self):
         if os.path.exists(self.config_file_path):
@@ -309,23 +348,22 @@ class ConfigSwitcherApp(QMainWindow):
                 for line in f:
                     if line.startswith("allow-cheats="):
                         return line.split("=", 1)[1].strip()
-        return "false"  # 默认值
+        return "false"
 
     def save_allow_cheats(self):
         allow_cheats_value = "true" if self.allow_cheats_checkbox.isChecked() else "false"
 
-        if allow_cheats_value:
-            with open(self.config_file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
 
-            with open(self.config_file_path, 'w', encoding='utf-8') as f:
-                for line in lines:
-                    if line.startswith("allow-cheats="):
-                        f.write(f"allow-cheats={allow_cheats_value}\n")
-                    else:
-                        f.write(line)
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("allow-cheats="):
+                    f.write(f"allow-cheats={allow_cheats_value}\n")
+                else:
+                    f.write(line)
 
-            QMessageBox.information(self, self.tr("保存成功"), self.tr("允许作弊已更新。"))
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("允许作弊已更新。"))
 
     def read_max_players(self):
         if os.path.exists(self.config_file_path):
@@ -333,7 +371,7 @@ class ConfigSwitcherApp(QMainWindow):
                 for line in f:
                     if line.startswith("max-players="):
                         return line.split("=", 1)[1].strip()
-        return "0"  # 默认值
+        return "0"
 
     def save_max_players(self):
         max_players_value = self.max_players_edit.text().strip()
@@ -353,10 +391,86 @@ class ConfigSwitcherApp(QMainWindow):
         else:
             QMessageBox.warning(self, self.tr("保存失败"), self.tr("人数上限必须是正整数。"))
 
+    def read_online_mode(self):
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("online-mode="):
+                        return line.split("=", 1)[1].strip()
+        return "false"
+
+    def save_online_mode(self):
+        online_mode_value = "true" if self.online_mode_checkbox.isChecked() else "false"
+
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("online-mode="):
+                    f.write(f"online-mode={online_mode_value}\n")
+                else:
+                    f.write(line)
+
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("正版验证已更新。"))
+
+    def read_allow_list(self):
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("allow-list="):
+                        return line.split("=", 1)[1].strip()
+        return "false"
+
+    def save_allow_list(self):
+        allow_list_value = "true" if self.allow_list_checkbox.isChecked() else "false"
+
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("allow-list="):
+                    f.write(f"allow-list={allow_list_value}\n")
+                else:
+                    f.write(line)
+
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("白名单已更新。"))
+
+    def read_level_name(self):
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("level-name="):
+                        return line.split("=", 1)[1].strip()
+        return ""
+
+    def save_level_name(self):
+        level_name_value = self.world_combo.currentText()
+
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("level-name="):
+                    f.write(f"level-name={level_name_value}\n")
+                else:
+                    f.write(line)
+
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("存档已更新。"))
+
+    def load_worlds(self):
+        if os.path.isdir(self.worlds_dir):
+            self.world_folders = [name for name in os.listdir(self.worlds_dir) if os.path.isdir(os.path.join(self.worlds_dir, name))]
+            self.world_combo.clear()
+            self.world_combo.addItems(self.world_folders)
+        else:
+            self.world_folders = []
+            self.world_combo.addItem(self.tr("存档文件夹不存在"))
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
     main_window = ConfigSwitcherApp()
     main_window.show()
-
     sys.exit(app.exec_())
