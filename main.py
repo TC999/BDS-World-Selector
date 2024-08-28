@@ -92,6 +92,7 @@ class ConfigSwitcherApp(QMainWindow):
             "<p>若关闭会防止服务器向客户端发送游戏模式值，而不是在创建世界时服务器保存的游戏模式值，即使这些值是在服务器中设置的。创建世界之后的属性。</p>"
             "<p>若开启强制服务器向客户端发送游戏模式值，而不是服务器在创建世界时保存的游戏模式值，如果这些值是服务器设置的。创建世界之后的属性。</p>"
         ))
+        force_gamemode_info.setMaximumHeight(100)  # 设置最大高度
         layout.addWidget(force_gamemode_info)
 
         # Allow Cheats
