@@ -155,7 +155,7 @@ class ConfigSwitcherApp(QMainWindow):
         donate_action = QAction(self.tr("赞助作者"), self)
         about_menu.addAction(donate_action)
 
-        about_action = QAction("关于此软件", self)
+        about_action = QAction(self.tr("关于此软件"), self)
         about_action.triggered.connect(self.show_about_dialog)
         about_menu.addAction(about_action)
 
@@ -174,9 +174,12 @@ class ConfigSwitcherApp(QMainWindow):
             "基岩版服务端存档切换器\n"
             "作者：TC999\n"
             "源码页面：https://github.com/TC999/BDS-World-Selector\n"
-            "许可证：GPLV3"
-            "致谢：\n"
-            "PyQt5 - 窗口框架"
+            "许可证：GPL3\n"
+            "使用项目：\n"
+            "PyQt5 - 窗口框架\n"
+            "贡献者：\n"
+            "TC999 - 所有者\n"
+            "ChatGPT4o - 代码编写 & 修 BUG"
         )
 
         QMessageBox.information(self, "关于此软件", about_message)
