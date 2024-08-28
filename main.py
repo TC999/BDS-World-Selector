@@ -155,7 +155,8 @@ class ConfigSwitcherApp(QMainWindow):
         donate_action = QAction(self.tr("赞助作者"), self)
         about_menu.addAction(donate_action)
 
-        about_action = QAction(self.tr("关于此软件"), self)
+        about_action = QAction("关于此软件", self)
+        about_action.triggered.connect(self.show_about_dialog)
         about_menu.addAction(about_action)
 
         menu_bar.addMenu(about_menu)
@@ -165,6 +166,20 @@ class ConfigSwitcherApp(QMainWindow):
     def open_bug_report_url(self): # 反馈BUG
         url = QUrl("https://github.com/TC999/BDS-World-Selector/issues")
         QDesktopServices.openUrl(url)
+
+    # 关于此软件
+    def show_about_dialog(self):
+        """显示关于软件的对话框"""
+        about_message = (
+            "基岩版服务端存档切换器\n"
+            "作者：TC999\n"
+            "源码页面：https://github.com/TC999/BDS-World-Selector\n"
+            "许可证：GPLV3"
+            "致谢：\n"
+            "PyQt5 - 窗口框架"
+        )
+
+        QMessageBox.information(self, "关于此软件", about_message)
 
     # 读取
     def read_server_name(self):
