@@ -2,6 +2,7 @@ import sys
 import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QMenuBar, QMenu, QAction, QVBoxLayout,
                              QWidget, QLineEdit, QLabel, QPushButton, QMessageBox, QComboBox, QCheckBox, QTextEdit, QHBoxLayout)
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QDesktopServices
 
@@ -15,6 +16,7 @@ class ConfigSwitcherApp(QMainWindow):
         self.force_gamemode = self.read_force_gamemode()
         self.difficulty = self.read_difficulty()
         self.allow_cheats = self.read_allow_cheats()
+        self.max_players = self.read_max_players()
 
         self.init_ui()
         self.init_menu()
@@ -106,6 +108,22 @@ class ConfigSwitcherApp(QMainWindow):
         allow_cheats_layout.addWidget(self.allow_cheats_checkbox)
 
         layout.addLayout(allow_cheats_layout)
+
+        # Max Players
+        max_players_layout = QHBoxLayout()
+        max_players_label = QLabel(self.tr("人数上限"), self)
+        max_players_layout.addWidget(max_players_label)
+
+        self.max_players_edit = QLineEdit(self)
+        self.max_players_edit.setText(self.max_players)
+        self.max_players_edit.setValidator(QIntValidator(1, 10000, self))  # 限定为正整数
+        max_players_layout.addWidget(self.max_players_edit)
+
+        save_max_players_button = QPushButton(self.tr("保存人数上限"), self)
+        save_max_players_button.clicked.connect(self.save_max_players)
+        max_players_layout.addWidget(save_max_players_button)
+
+        layout.addLayout(max_players_layout)
 
         # Central widget
         central_widget = QWidget(self)
@@ -308,6 +326,32 @@ class ConfigSwitcherApp(QMainWindow):
                         f.write(line)
 
             QMessageBox.information(self, self.tr("保存成功"), self.tr("允许作弊已更新。"))
+
+    def read_max_players(self):
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("max-players="):
+                        return line.split("=", 1)[1].strip()
+        return "0"  # 默认值
+
+    def save_max_players(self):
+        max_players_value = self.max_players_edit.text().strip()
+
+        if max_players_value.isdigit() and int(max_players_value) > 0:
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+
+            with open(self.config_file_path, 'w', encoding='utf-8') as f:
+                for line in lines:
+                    if line.startswith("max-players="):
+                        f.write(f"max-players={max_players_value}\n")
+                    else:
+                        f.write(line)
+
+            QMessageBox.information(self, self.tr("保存成功"), self.tr("人数上限已更新。"))
+        else:
+            QMessageBox.warning(self, self.tr("保存失败"), self.tr("人数上限必须是正整数。"))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
