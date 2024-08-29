@@ -27,6 +27,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
+[![Pull Requests][pull-requests-shield]][pull-requests-url]
 [![License][license-shield]](LICENSE)
 
 
@@ -139,6 +140,7 @@ pip install PyQt5
 - [ ] 隐藏选项
 - [ ] 多语言适配（暂时只支持简体中文）
 - [ ] 代码优化（GPT写的屎山）
+- [ ] 代码分成几个文件（现在`main.py`已经有**500行**代码了）
 - [ ] 每个存档单独配置文件
 - [ ] 种子自动读取(读取存档`level.dat`文件)
 
@@ -147,5 +149,20 @@ pip install PyQt5
 
 ## 许可证
 本项目采用 [GPL3 许可证](LICENSE)。
+
+[contributors-url]: https://github.com/TC999/BDS-World-Selector/graphs/contributors "贡献者"
+[contributors-shield]: https://img.shields.io/github/contributors/TC999/BDS-World-Selector?style=flat&logoSize=auto&label=%E8%B4%A1%E7%8C%AE%E8%80%85
+
+[issues-url]: https://github.com/TC999/BDS-World-Selector/issues "议题"
+[issues-shield]: https://img.shields.io/github/issues/TC999/BDS-World-Selector?style=flat&logoSize=auto&label=%E8%AE%AE%E9%A2%98
+
+[pull-requests-url]: https://github.com/TC999/BDS-World-Selector/pulls "拉取请求"
+[pull-requests-shield]: https://img.shields.io/github/issues-pr/TC999/BDS-World-Selector?label=%E6%8B%89%E5%8F%96%E8%AF%B7%E6%B1%82
+
+[forks-url]: https://github.com/TC999/BDS-World-Selector/fork "复刻"
+[forks-shield]: https://img.shields.io/github/forks/TC999/BDS-World-Selector?style=flat&label=%E5%A4%8D%E5%88%BB%E6%95%B0
+
+[stars-url]: https://github.com/TC999/BDS-World-Selector/stargazers "星标"
+[stars-shield]:https://img.shields.io/github/stars/TC999/BDS-World-Selector?style=flat&logo=github&logoSize=auto&label=%E6%98%9F%E6%A0%87
 
 [license-shield]: https://img.shields.io/github/license/TC999/BDS-World-Selector?style=flat&logoSize=auto&label=%E8%AE%B8%E5%8F%AF%E8%AF%81
