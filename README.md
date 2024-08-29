@@ -27,7 +27,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![License][license-shield]](LICENSE)
 
 
 <!-- PROJECT LOGO -->
@@ -97,11 +97,12 @@
     - [x] 切换存档
     - [x] 游戏模式
     - [x] 强制游戏模式
-    - [ ] 种子随存档切换自动读取
+    - [x] 种子手动切换
     - [x] 最大在线人数
     - [x] 游戏难度
     - [x] 正版验证
     - [x] 白名单启用
+    - [x] 视距调整
 
 ## 快速开始
 暂无打算发布二进制文件，请使用源码运行
@@ -135,12 +136,16 @@ pip install PyQt5
 ## ✔ 待办(TODO)
 
 - [ ] 更多选项
+- [ ] 隐藏选项
 - [ ] 多语言适配（暂时只支持简体中文）
 - [ ] 代码优化（GPT写的屎山）
 - [ ] 每个存档单独配置文件
+- [ ] 种子自动读取(读取存档`level.dat`文件)
 
-## 已知 BUG
-- [ ] 端口更改不可用(无法读取，且会导致程序直接退出)
+## 已知 BUG（打勾为已修复）
+- [x] 端口更改不可用(无法读取，且会导致程序直接退出)
 
 ## 许可证
 本项目采用 [GPL3 许可证](LICENSE)。
+
+[license-shield]: https://img.shields.io/github/license/TC999/BDS-World-Selector?style=flat&logoSize=auto&label=%E8%AE%B8%E5%8F%AF%E8%AF%81
