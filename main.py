@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import (
     QPushButton, QComboBox, QCheckBox, QFormLayout, QMessageBox, QSpacerItem, QSizePolicy,
     QMenuBar, QAction, QMenu
 )
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QDesktopServices
 
 class ConfigSwitcherApp(QMainWindow):
     def __init__(self):
@@ -163,9 +165,15 @@ class ConfigSwitcherApp(QMainWindow):
 
         self.setMenuBar(menu_bar)
 
-    def open_bug_report_url(self): # 反馈BUG
-        url = QUrl("https://github.com/TC999/BDS-World-Selector/issues")
-        QDesktopServices.openUrl(url)
+    # BUG 反馈
+    def open_bug_report_url(self):
+        print("Attempting to open bug report URL...")  # 调试日志
+        try:
+            url = QUrl("https://github.com/TC999/BDS-World-Selector/issues")
+            QDesktopServices.openUrl(url)
+            print("URL opened successfully.")  # 调试日志
+        except Exception as e:
+            print(f"Error opening URL: {e}")  # 调试日志
 
     # 关于此软件
     def show_about_dialog(self):
