@@ -24,8 +24,8 @@ class ConfigSwitcherApp(QMainWindow):
         self.online_mode = self.read_online_mode()
         self.allow_list = self.read_allow_list()
         self.level_name = self.read_level_name()
-        self.server_port = ""  # 初始化为默认值或从配置中读取
-        self.server_portv6 = ""  # 初始化为默认值或从配置中读取
+        self.server_port =self.read_server_port()  # 初始化为默认值或从配置中读取
+        self.server_portv6 =self.read_server_portv6()  # 初始化为默认值或从配置中读取
 
         self.init_ui()
         self.init_menu()
@@ -113,7 +113,7 @@ class ConfigSwitcherApp(QMainWindow):
         form_layout.addRow(QLabel("白名单:"), self.allow_list_checkbox)
         form_layout.addWidget(self.allow_list_save_button)
 
-        # IPV4 地址(有 BUG)
+        # IPV4 地址
         self.ipv4_edit = QLineEdit()
         self.ipv4_edit.setPlaceholderText("输入 1 至 65535 的正整数")
         self.ipv4_edit.setText(self.server_port)
@@ -122,7 +122,7 @@ class ConfigSwitcherApp(QMainWindow):
         form_layout.addRow(QLabel("IPV4 地址:"), self.ipv4_edit)
         form_layout.addWidget(self.ipv4_save_button)
 
-        # IPV6 地址(有 BUG)
+        # IPV6 地址
         self.ipv6_edit = QLineEdit()
         self.ipv6_edit.setPlaceholderText("输入 1 至 65535 的正整数")
         self.ipv6_edit.setText(self.server_portv6)
@@ -179,7 +179,7 @@ class ConfigSwitcherApp(QMainWindow):
             "PyQt5 - 窗口框架\n"
             "贡献者：\n"
             "TC999 - 所有者\n"
-            "ChatGPT4o - 代码编写 & 修 BUG"
+            "ChatGPT4o - 代码编写 & 修 BUG\n"
         )
 
         QMessageBox.information(self, "关于此软件", about_message)
