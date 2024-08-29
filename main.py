@@ -6,8 +6,11 @@ from PyQt5.QtWidgets import (
     QPushButton, QComboBox, QCheckBox, QFormLayout, QMessageBox, QSpacerItem, QSizePolicy,
     QMenuBar, QAction, QMenu
 )
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices, QIntValidator
+from PyQt5.QtWidgets import QSlider, QLabel, QPushButton
+
+
 
 class ConfigSwitcherApp(QMainWindow):
     def __init__(self):
@@ -30,6 +33,7 @@ class ConfigSwitcherApp(QMainWindow):
         self.server_portv6 =self.read_server_portv6()  # 初始化为默认值或从配置中读取
         self.view_distance = self.read_view_distance() # 视距
         self.level_seed = self.read_level_seed() # 世界种子
+        self.tick_distance = self.read_tick_distance()
 
         self.init_ui()
         self.init_menu()
@@ -93,6 +97,28 @@ class ConfigSwitcherApp(QMainWindow):
 
         form_layout.addRow(level_seed_label, self.level_seed_edit)
         form_layout.addRow(level_seed_save_button)
+
+        # 模拟距离
+        tick_distance_label = QLabel("模拟距离")
+        self.tick_distance_slider = QSlider(Qt.Horizontal)
+        self.tick_distance_slider.setRange(4, 12)  # 设置滑块范围为4到12
+        self.tick_distance_slider.setValue(self.tick_distance)  # 设置滑块的初始值
+        self.tick_distance_slider.setTickPosition(QSlider.TicksBelow)
+        self.tick_distance_slider.setTickInterval(1)  # 设置滑块刻度间隔为1
+
+        # 显示当前值的标签
+        self.tick_distance_value_label = QLabel(str(self.tick_distance))
+
+        # 当滑块值改变时，更新显示的标签
+        self.tick_distance_slider.valueChanged.connect(lambda value: self.tick_distance_value_label.setText(str(value)))
+
+        # 保存按钮
+        tick_distance_save_button = QPushButton("保存")
+        tick_distance_save_button.clicked.connect(self.save_tick_distance)
+
+        # 添加到布局中
+        form_layout.addRow(tick_distance_label, self.tick_distance_slider)
+        form_layout.addRow(self.tick_distance_value_label, tick_distance_save_button)
 
         # 允许作弊
         self.allow_cheats_checkbox = QCheckBox()
@@ -532,6 +558,20 @@ class ConfigSwitcherApp(QMainWindow):
     def save_level_seed(self):
         new_level_seed = self.level_seed_edit.text()
         self.update_config_file("level-seed", new_level_seed)
+
+    def read_tick_distance(self):
+        try:
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("tick-distance="):
+                        return int(line.strip().split('=')[1])
+            return 4  # 如果未找到，返回默认值4
+        except FileNotFoundError:
+            return 4  # 如果文件不存在，返回默认值4
+
+    def save_tick_distance(self):
+        new_tick_distance = self.tick_distance_slider.value()
+        self.update_config_file("tick-distance", str(new_tick_distance))
 
     def save_config(self, key, value):
         """保存配置项到文件"""
