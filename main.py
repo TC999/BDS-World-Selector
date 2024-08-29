@@ -29,6 +29,7 @@ class ConfigSwitcherApp(QMainWindow):
         self.server_port =self.read_server_port()  # 初始化为默认值或从配置中读取
         self.server_portv6 =self.read_server_portv6()  # 初始化为默认值或从配置中读取
         self.view_distance = self.read_view_distance() # 视距
+        self.level_seed = self.read_level_seed() # 世界种子
 
         self.init_ui()
         self.init_menu()
@@ -83,6 +84,15 @@ class ConfigSwitcherApp(QMainWindow):
         self.difficulty_save_button.clicked.connect(self.save_difficulty)
         form_layout.addRow(QLabel("难度:"), self.difficulty_combo)
         form_layout.addWidget(self.difficulty_save_button)
+
+        # 世界种子
+        level_seed_label = QLabel("世界种子")
+        self.level_seed_edit = QLineEdit(self.level_seed)
+        level_seed_save_button = QPushButton("保存")
+        level_seed_save_button.clicked.connect(self.save_level_seed)
+
+        form_layout.addRow(level_seed_label, self.level_seed_edit)
+        form_layout.addRow(level_seed_save_button)
 
         # 允许作弊
         self.allow_cheats_checkbox = QCheckBox()
@@ -508,6 +518,20 @@ class ConfigSwitcherApp(QMainWindow):
     def save_view_distance(self):
         new_view_distance = self.view_distance_edit.text()
         self.update_config_file("view-distance", new_view_distance)
+
+    def read_level_seed(self):
+        try:
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("level-seed="):
+                        return line.strip().split('=')[1]
+            return ""  # 如果未找到，返回空字符串
+        except FileNotFoundError:
+            return ""  # 如果文件不存在，返回空字符串
+
+    def save_level_seed(self):
+        new_level_seed = self.level_seed_edit.text()
+        self.update_config_file("level-seed", new_level_seed)
 
     def save_config(self, key, value):
         """保存配置项到文件"""
