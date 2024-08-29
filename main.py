@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QMenuBar, QAction, QMenu
 )
 from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QIntValidator
 
 class ConfigSwitcherApp(QMainWindow):
     def __init__(self):
@@ -17,8 +17,8 @@ class ConfigSwitcherApp(QMainWindow):
         self.worlds_dir = "worlds"  # 假设存档文件夹路径
 
         # 初始化配置
-        self.server_name = self.read_server_name()
-        self.gamemode = self.read_gamemode()
+        self.server_name = self.read_server_name() # 服务器名
+        self.gamemode = self.read_gamemode() # 游戏模式
         self.force_gamemode = self.read_force_gamemode()
         self.difficulty = self.read_difficulty()
         self.allow_cheats = self.read_allow_cheats()
@@ -28,6 +28,7 @@ class ConfigSwitcherApp(QMainWindow):
         self.level_name = self.read_level_name()
         self.server_port =self.read_server_port()  # 初始化为默认值或从配置中读取
         self.server_portv6 =self.read_server_portv6()  # 初始化为默认值或从配置中读取
+        self.view_distance = self.read_view_distance() # 视距
 
         self.init_ui()
         self.init_menu()
@@ -132,6 +133,16 @@ class ConfigSwitcherApp(QMainWindow):
         self.ipv6_save_button.clicked.connect(self.save_server_portv6)
         form_layout.addRow(QLabel("IPV6 地址:"), self.ipv6_edit)
         form_layout.addWidget(self.ipv6_save_button)
+
+        # 视距
+        view_distance_label = QLabel("视距")
+        self.view_distance_edit = QLineEdit(self.view_distance)
+        self.view_distance_edit.setValidator(QIntValidator(1, 100))  # 只允许输入正整数，范围1到100
+        view_distance_save_button = QPushButton("保存")
+        view_distance_save_button.clicked.connect(self.save_view_distance)
+
+        form_layout.addRow(view_distance_label, self.view_distance_edit)
+        form_layout.addRow(view_distance_save_button)
 
         self.setWindowTitle("基岩版服务端存档切换器")
         self.setGeometry(100, 100, 600, 600)  # 设置初始窗口大小
@@ -483,6 +494,20 @@ class ConfigSwitcherApp(QMainWindow):
         """保存 'server-portv6=' 配置项"""
         new_portv6 = self.server_portv6_edit.text()
         self.save_config("server-portv6=", new_portv6)
+
+    def read_view_distance(self):
+        try:
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("view-distance="):
+                        return line.strip().split('=')[1]
+            return "10"  # 如果未找到，返回默认值
+        except FileNotFoundError:
+            return "10"  # 如果文件不存在，返回默认值
+
+    def save_view_distance(self):
+        new_view_distance = self.view_distance_edit.text()
+        self.update_config_file("view-distance", new_view_distance)
 
     def save_config(self, key, value):
         """保存配置项到文件"""
