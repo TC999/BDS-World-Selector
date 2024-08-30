@@ -23,12 +23,12 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![Pull Requests][pull-requests-shield]][pull-requests-url]
-[![License][license-shield]](LICENSE)
+[![贡献者][contributors-shield]][contributors-url]
+[![议题][issues-shield]][issues-url]
+[![拉取请求][pull-requests-shield]][pull-requests-url]
+[![复刻][forks-shield]][forks-url]
+[![标星者][stars-shield]][stars-url]
+[![许可证][license-shield]](LICENSE)
 
 
 <!-- PROJECT LOGO -->
@@ -90,20 +90,21 @@
 
 <!-- ABOUT THE PROJECT -->
 ## 关于此项目
-这是一个用于可视化更改 BDS 配置文件的程序，用于快速切换存档，支持多存档不同设置，不再一个个手打！
+这是一个用于可视化更改 BDS 配置文件的程序，用于快速切换存档，支持多存档不同设置，不再一个个手打出错！
 本项目采用 ChatGPT4o 编写，代码质量一般，如有可优化空间，请直接提交拉取请求！
 
 - 当前已实现更改：
     - [x] 服务器名
-    - [x] 切换存档
-    - [x] 游戏模式
-    - [x] 强制游戏模式
-    - [x] 种子手动切换
+    - [x] 切换存档（下拉框选择）
+    - [x] 游戏模式（下拉框选择）
+    - [x] 强制游戏模式（勾选框）
+    - [x] 种子手动切换（暂不支持读取）
     - [x] 最大在线人数
-    - [x] 游戏难度
+    - [x] 游戏难度（下拉框选择）
     - [x] 正版验证
     - [x] 白名单启用
     - [x] 视距调整
+    - [x] 模拟距离调整（滑块）
 
 ## 快速开始
 暂无打算发布二进制文件，请使用源码运行
@@ -147,6 +148,10 @@ pip install PyQt5
 ## 已知 BUG（打勾为已修复）
 - [x] 端口更改不可用(无法读取，且会导致程序直接退出)
 
+## 本项目使用
+- [PyQt5][PyQt5] - 程序框架
+- [Best-README-Template][Best-README-Template] - 自述文件(README)模板
+
 ## 许可证
 本项目采用 [GPL-3.0 许可证](LICENSE)。
 
@@ -166,3 +171,7 @@ pip install PyQt5
 [stars-shield]:https://img.shields.io/github/stars/TC999/BDS-World-Selector?style=flat&logo=github&logoSize=auto&label=%E6%98%9F%E6%A0%87
 
 [license-shield]: https://img.shields.io/github/license/TC999/BDS-World-Selector?style=flat&logoSize=auto&label=%E8%AE%B8%E5%8F%AF%E8%AF%81
+
+[PyQt5]: https://pypi.org/project/PyQt5
+
+[Best-README-Template]: https://github.com/othneildrew/Best-README-Template
