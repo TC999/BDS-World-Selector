@@ -106,6 +106,16 @@ class ConfigSwitcherApp(QMainWindow):
         self.tick_distance_slider.setTickPosition(QSlider.TicksBelow)
         self.tick_distance_slider.setTickInterval(1)  # 设置滑块刻度间隔为1
 
+        # 视距
+        view_distance_label = QLabel("视距")
+        self.view_distance_edit = QLineEdit(self.view_distance)
+        self.view_distance_edit.setValidator(QIntValidator(1, 100))  # 只允许输入正整数，范围1到100
+        view_distance_save_button = QPushButton("保存")
+        view_distance_save_button.clicked.connect(self.save_view_distance)
+
+        form_layout.addRow(view_distance_label, self.view_distance_edit)
+        form_layout.addRow(view_distance_save_button)
+
         # 显示当前值的标签
         self.tick_distance_value_label = QLabel(str(self.tick_distance))
 
@@ -170,16 +180,6 @@ class ConfigSwitcherApp(QMainWindow):
         form_layout.addRow(QLabel("IPV6 地址:"), self.ipv6_edit)
         form_layout.addWidget(self.ipv6_save_button)
 
-        # 视距
-        view_distance_label = QLabel("视距")
-        self.view_distance_edit = QLineEdit(self.view_distance)
-        self.view_distance_edit.setValidator(QIntValidator(1, 100))  # 只允许输入正整数，范围1到100
-        view_distance_save_button = QPushButton("保存")
-        view_distance_save_button.clicked.connect(self.save_view_distance)
-
-        form_layout.addRow(view_distance_label, self.view_distance_edit)
-        form_layout.addRow(view_distance_save_button)
-
         self.setWindowTitle("基岩版服务端存档切换器")
         self.setGeometry(100, 100, 600, 600)  # 设置初始窗口大小
 
@@ -229,7 +229,7 @@ class ConfigSwitcherApp(QMainWindow):
             "基岩版服务端存档切换器\n"
             "作者：TC999\n"
             "源码页面：https://github.com/TC999/BDS-World-Selector\n"
-            "许可证：GPL3\n"
+            "许可证：GPL-3.0\n"
             "使用项目：\n"
             "PyQt5 - 窗口框架\n"
             "贡献者：\n"
