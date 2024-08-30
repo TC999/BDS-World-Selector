@@ -23,17 +23,18 @@ class ConfigSwitcherApp(QMainWindow):
         self.server_name = self.read_server_name() # 服务器名
         self.gamemode = self.read_gamemode() # 游戏模式
         self.force_gamemode = self.read_force_gamemode()
-        self.difficulty = self.read_difficulty()
-        self.allow_cheats = self.read_allow_cheats()
-        self.max_players = self.read_max_players()
-        self.online_mode = self.read_online_mode()
-        self.allow_list = self.read_allow_list()
-        self.level_name = self.read_level_name()
+        self.difficulty = self.read_difficulty() # 游戏难度
+        self.allow_cheats = self.read_allow_cheats() # 允许作弊
+        self.max_players = self.read_max_players() # 最大人数
+        self.online_mode = self.read_online_mode() # 正版验证
+        self.allow_list = self.read_allow_list() # 白名单
+        self.level_name = self.read_level_name() # 存档名称
         self.server_port =self.read_server_port()  # 初始化为默认值或从配置中读取
         self.server_portv6 =self.read_server_portv6()  # 初始化为默认值或从配置中读取
         self.view_distance = self.read_view_distance() # 视距
         self.level_seed = self.read_level_seed() # 世界种子
-        self.tick_distance = self.read_tick_distance()
+        self.tick_distance = self.read_tick_distance() # 模拟距离
+        self.player_permission_level = self.read_player_permission_level() # 玩家权限
 
         self.init_ui()
         self.init_menu()
@@ -116,19 +117,36 @@ class ConfigSwitcherApp(QMainWindow):
         self.tick_distance_slider.setTickPosition(QSlider.TicksBelow)
         self.tick_distance_slider.setTickInterval(1)  # 设置滑块刻度间隔为1
 
-        # 显示当前值的标签
+        ## 显示当前值的标签
         self.tick_distance_value_label = QLabel(str(self.tick_distance))
 
-        # 当滑块值改变时，更新显示的标签
+        ## 当滑块值改变时，更新显示的标签
         self.tick_distance_slider.valueChanged.connect(lambda value: self.tick_distance_value_label.setText(str(value)))
 
-        # 保存按钮
+        ## 保存按钮
         tick_distance_save_button = QPushButton("保存")
         tick_distance_save_button.clicked.connect(self.save_tick_distance)
 
-        # 添加到布局中
+        ## 添加到布局中
         form_layout.addRow(tick_distance_label, self.tick_distance_slider)
         form_layout.addRow(self.tick_distance_value_label, tick_distance_save_button)
+
+        # 玩家权限
+        player_permission_label = QLabel("玩家权限")
+        self.player_permission_combo = QComboBox()
+        self.player_permission_combo.addItems(["游客", "成员", "管理员"])
+        permission_values = {
+            "visitor": "游客",
+            "member": "成员",
+            "operator": "管理员"
+        }
+        ## 根据读取的值设置下拉框显示
+        self.player_permission_combo.setCurrentText(permission_values.get(self.player_permission_level, "成员"))
+        player_permission_save_button = QPushButton("保存")
+        player_permission_save_button.clicked.connect(self.save_player_permission_level)
+
+        form_layout.addRow(player_permission_label, self.player_permission_combo)
+        form_layout.addRow(QLabel(""), player_permission_save_button)  # 将按钮放在下拉框右侧
 
         # 允许作弊
         self.allow_cheats_checkbox = QCheckBox()
@@ -592,6 +610,24 @@ class ConfigSwitcherApp(QMainWindow):
         except Exception as e:
             print(f"Error while saving tick distance: {e}") # 调试日志
 
+    def read_player_permission_level(self):
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.startswith("default-player-permission-level="):
+                    return line.split("=")[1].strip()
+        return "member"  # 如果未找到则返回默认值
+
+    def save_player_permission_level(self):
+        reverse_permission_values = {
+            "游客": "visitor",
+            "成员": "member",
+            "管理员": "operator"
+        }
+        new_permission_level = reverse_permission_values[self.player_permission_combo.currentText()]
+        self.update_config_file("default-player-permission-level", new_permission_level)
+        print(f"Player permission level saved: {new_permission_level}") # 调试日志
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("玩家权限已更新。"))
+
     def update_config_file(self, key, value):
         try:
             with open(self.config_file_path, 'r', encoding='utf-8') as f:
@@ -606,7 +642,6 @@ class ConfigSwitcherApp(QMainWindow):
             print(f"Config file updated: {key}={value}")
         except Exception as e:
             print(f"Error while updating config file: {e}")
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
