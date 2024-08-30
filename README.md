@@ -46,13 +46,13 @@
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
     <br />
-    -->
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
+    -->
     ·
     <a href="https://github.com/TC999/BDS-World-Selector/issues">反馈 BUG</a>
     ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues/new?labels=enhancement&template=feature-request---.md">功能请求</a>
+    <a href="https://github.com/TC999/BDS-World-Selector/issues">功能请求</a>
   </p>
 </div>
 
@@ -69,7 +69,7 @@
       -->
     </li>
     <li>
-      <a href="#getting-started">快速开始</a>
+      <a href="#快速开始">快速开始</a>
       <!---
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
@@ -77,12 +77,16 @@
       </ul>
       -->
     </li>
+    <!---
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+    -->
     <li><a href="#贡献">贡献</a></li>
     <li><a href="#许可证">许可证</a></li>
+    <!---
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
+    -->
   </ol>
 </details>
 
@@ -91,7 +95,7 @@
 <!-- ABOUT THE PROJECT -->
 ## 关于此项目
 这是一个用于可视化更改 BDS 配置文件的程序，用于快速切换存档，支持多存档不同设置，不再一个个手打出错！
-本项目采用 ChatGPT4o 编写，代码质量一般，如有可优化空间，请直接提交拉取请求！
+本项目采用 ChatGPT4o 编写，代码质量一般，如有可优化空间，请直接提交拉取请求！如有 BUG ，请直接提交[议题][issues-url]！
 
 - 当前已实现更改：
     - [x] 服务器名
@@ -105,6 +109,9 @@
     - [x] 白名单启用
     - [x] 视距调整
     - [x] 模拟距离调整（滑块）
+
+## 软件界面截图
+![截图](doc/软件界面截图.png)
 
 ## 快速开始
 暂无打算发布二进制文件，请使用源码运行
@@ -136,14 +143,15 @@ pip install PyQt5
 4. 创建一个拉取请求`(Pull Request)`
 
 ## ✔ 待办(TODO)
-
+如果做了请直接提交 PR
 - [ ] 更多选项
-- [ ] 隐藏选项
+- [ ] 隐藏选项（详见 [Minebbs](https://www.minebbs.com/threads/bedrock-dedicated-server-server-properties.1664/)）
 - [ ] 多语言适配（暂时只支持简体中文）
 - [ ] 代码优化（GPT写的屎山）
 - [ ] 代码分成几个文件（现在`main.py`已经有**500行**代码了）
-- [ ] 每个存档单独配置文件
+- [ ] 每个存档单独配置文件（当前实现想法是在每个存档目录下都放一份`server.properties`文件）
 - [ ] 种子自动读取(读取存档`level.dat`文件)
+- [ ] 深色模式（使用第三方库实现）
 
 ## 已知 BUG（打勾为已修复）
 - [x] 端口更改不可用(无法读取，且会导致程序直接退出)
