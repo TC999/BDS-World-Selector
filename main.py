@@ -98,14 +98,6 @@ class ConfigSwitcherApp(QMainWindow):
         form_layout.addRow(level_seed_label, self.level_seed_edit)
         form_layout.addRow(level_seed_save_button)
 
-        # 模拟距离
-        tick_distance_label = QLabel("模拟距离")
-        self.tick_distance_slider = QSlider(Qt.Horizontal)
-        self.tick_distance_slider.setRange(4, 12)  # 设置滑块范围为4到12
-        self.tick_distance_slider.setValue(self.tick_distance)  # 设置滑块的初始值
-        self.tick_distance_slider.setTickPosition(QSlider.TicksBelow)
-        self.tick_distance_slider.setTickInterval(1)  # 设置滑块刻度间隔为1
-
         # 视距
         view_distance_label = QLabel("视距")
         self.view_distance_edit = QLineEdit(self.view_distance)
@@ -115,6 +107,14 @@ class ConfigSwitcherApp(QMainWindow):
 
         form_layout.addRow(view_distance_label, self.view_distance_edit)
         form_layout.addRow(view_distance_save_button)
+
+        # 模拟距离
+        tick_distance_label = QLabel("模拟距离")
+        self.tick_distance_slider = QSlider(Qt.Horizontal)
+        self.tick_distance_slider.setRange(4, 12)  # 设置滑块范围为4到12
+        self.tick_distance_slider.setValue(self.tick_distance)  # 设置滑块的初始值
+        self.tick_distance_slider.setTickPosition(QSlider.TicksBelow)
+        self.tick_distance_slider.setTickInterval(1)  # 设置滑块刻度间隔为1
 
         # 显示当前值的标签
         self.tick_distance_value_label = QLabel(str(self.tick_distance))
@@ -522,14 +522,26 @@ class ConfigSwitcherApp(QMainWindow):
         return ""
 
     def save_server_port(self):
-        """保存 'server-port=' 配置项"""
-        new_port = self.server_port_edit.text()
-        self.save_config("server-port=", new_port)
+        try:
+            new_ipv4_address = self.ipv4_edit.text()
+            print(f"Saving IPV4 address: {new_ipv4_address}") # 调试日志
+            self.update_config_file("server-port", str(new_ipv4_address))
+            print("IPV4 address saved successfully.") # 调试日志
+
+            QMessageBox.information(self, self.tr("保存成功"), self.tr("IPV4地址已更新。"))
+        except Exception as e:
+            print(f"Error while saving IPV4 address: {e}") # 调试日志
 
     def save_server_portv6(self):
-        """保存 'server-portv6=' 配置项"""
-        new_portv6 = self.server_portv6_edit.text()
-        self.save_config("server-portv6=", new_portv6)
+        try:
+            new_ipv6_address = self.ipv6_edit.text()
+            print(f"Saving IPV6 address: {new_ipv6_address}") # 调试日志
+            self.update_config_file("server-portv6", str(new_ipv6_address))
+            print("IPV6 address saved successfully.") # 调试日志
+
+            QMessageBox.information(self, self.tr("保存成功"), self.tr("IPV6地址已更新。"))
+        except Exception as e:
+            print(f"Error while saving IPV6 address: {e}") # 调试日志
 
     def read_view_distance(self):
         try:
@@ -559,6 +571,8 @@ class ConfigSwitcherApp(QMainWindow):
         new_level_seed = self.level_seed_edit.text()
         self.update_config_file("level-seed", new_level_seed)
 
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("世界种子已更新。"))
+
     def read_tick_distance(self):
         try:
             with open(self.config_file_path, 'r', encoding='utf-8') as f:
@@ -570,25 +584,29 @@ class ConfigSwitcherApp(QMainWindow):
             return 4  # 如果文件不存在，返回默认值4
 
     def save_tick_distance(self):
-        new_tick_distance = self.tick_distance_slider.value()
-        self.update_config_file("tick-distance", str(new_tick_distance))
+        try:
+            new_tick_distance = self.tick_distance_slider.value()
+            print(f"Saving tick distance: {new_tick_distance}") # 调试日志
+            self.update_config_file("tick-distance", str(new_tick_distance))
+            print("Tick distance saved successfully.") # 调试日志
+        except Exception as e:
+            print(f"Error while saving tick distance: {e}") # 调试日志
 
-    def save_config(self, key, value):
-        """保存配置项到文件"""
-        lines = []
-        with open(self.config_file_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
+    def update_config_file(self, key, value):
+        try:
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
 
-        with open(self.config_file_path, 'w', encoding='utf-8') as f:
-            found = False
-            for line in lines:
-                if line.startswith(key):
-                    f.write(f"{key}{value}\n")
-                    found = True
-                else:
-                    f.write(line)
-            if not found:
-                f.write(f"{key}{value}\n")
+            with open(self.config_file_path, 'w', encoding='utf-8') as f:
+                for line in lines:
+                    if line.startswith(f"{key}="):
+                        f.write(f"{key}={value}\n")
+                    else:
+                        f.write(line)
+            print(f"Config file updated: {key}={value}")
+        except Exception as e:
+            print(f"Error while updating config file: {e}")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
