@@ -148,7 +148,7 @@ pip install PyQt5
 - [x] 端口更改不可用(无法读取，且会导致程序直接退出)
 
 ## 许可证
-本项目采用 [GPL3 许可证](LICENSE)。
+本项目采用 [GPL-3.0 许可证](LICENSE)。
 
 [contributors-url]: https://github.com/TC999/BDS-World-Selector/graphs/contributors "贡献者"
 [contributors-shield]: https://img.shields.io/github/contributors/TC999/BDS-World-Selector?style=flat&logoSize=auto&label=%E8%B4%A1%E7%8C%AE%E8%80%85
