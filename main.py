@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QComboBox, QCheckBox, QFormLayout, QMessageBox, QSpacerItem, QSizePolicy,
-    QMenuBar, QAction, QMenu
+    QMenuBar, QAction, QMenu, QScrollArea
 )
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices, QIntValidator
@@ -40,11 +40,22 @@ class ConfigSwitcherApp(QMainWindow):
         self.init_menu()
 
     def init_ui(self):
+        super().__init__()
+
+        # 创建主窗口部件和布局
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
-        layout = QVBoxLayout(central_widget)
         form_layout = QFormLayout()
+
+        # 使用QScrollArea
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+        # 创建一个用于布局所有控件的 QWidget
+        layout_widget = QWidget()
+
+        # 采用 QVBoxLayout 包含所有控件
+        layout = QVBoxLayout(layout_widget)
 
         # 服务器名称
         self.server_name_edit = QLineEdit()
@@ -197,6 +208,13 @@ class ConfigSwitcherApp(QMainWindow):
         self.ipv6_save_button.clicked.connect(self.save_server_portv6)
         form_layout.addRow(QLabel("IPV6 地址:"), self.ipv6_edit)
         form_layout.addWidget(self.ipv6_save_button)
+
+        # 将 layout_widget 设置为 scroll_area 的子部件
+        scroll_area.setWidget(layout_widget)
+
+        # 最后将 scroll_area 设置为中央部件的布局
+        main_layout = QVBoxLayout(central_widget)
+        main_layout.addWidget(scroll_area)
 
         self.setWindowTitle("基岩版服务端存档切换器")
         self.setGeometry(100, 100, 600, 600)  # 设置初始窗口大小
