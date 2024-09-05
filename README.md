@@ -41,7 +41,7 @@
   <h3 align="center">BDS-World-Selector</h3>
 
   <p align="center">
-    一键修改 Minecraft 基岩版服务端(BDS)配置文件，不再为修改配置坐牢！
+    一键修改 Minecraft 基岩版服务端(BDS)配置文件，不再为修改配置坐牢！理论上支持 Ubuntu！
     <!--
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
