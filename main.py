@@ -36,6 +36,7 @@ class ConfigSwitcherApp(QMainWindow):
         self.tick_distance = self.read_tick_distance() # 模拟距离
         self.player_permission_level = self.read_player_permission_level() # 玩家权限
         self.texturepack_required = self.read_texturepack_required() # 强制材质包
+        self.log_file_enabled = self.read_log_file_enabled()  # 日志
 
         self.init_ui()
         self.init_menu()
@@ -217,6 +218,17 @@ class ConfigSwitcherApp(QMainWindow):
         self.texturepack_checkbox.stateChanged.connect(self.save_texturepack_required)
         layout.addWidget(texturepack_label)
         layout.addWidget(self.texturepack_checkbox)
+
+        # 日志设置
+        log_label = QLabel("日志")
+        self.log_checkbox = QCheckBox()
+        self.log_checkbox.setChecked(self.read_log_file_enabled() == "true")
+        log_save_button = QPushButton("保存")
+        log_save_button.clicked.connect(self.save_log_file_enabled)
+
+        # 将控件添加到布局中
+        form_layout.addRow(log_label, self.log_checkbox)
+        form_layout.addRow("", log_save_button)
 
         # 将 layout_widget 设置为 scroll_area 的子部件
         scroll_area.setWidget(layout_widget)
@@ -683,6 +695,31 @@ class ConfigSwitcherApp(QMainWindow):
 
             # 弹出成功提示框
             QMessageBox.information(self, self.tr("保存成功"), self.tr("强制使用指定材质包设置已更新。"))
+
+    def read_log_file_enabled(self):
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("content-log-file-enabled="):
+                        return line.split("=", 1)[1].strip()
+        return "false"
+
+    def save_log_file_enabled(self):
+        log_file_value = "true" if self.log_checkbox.isChecked() else "false"
+
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+
+            with open(self.config_file_path, 'w', encoding='utf-8') as f:
+                for line in lines:
+                    if line.startswith("content-log-file-enabled="):
+                        f.write(f"content-log-file-enabled={log_file_value}\n")
+                    else:
+                        f.write(line)
+
+            # 提示保存成功
+            QMessageBox.information(self, self.tr("保存成功"), self.tr("日志设置已更新。"))
 
     def update_config_file(self, key, value):
         try:
