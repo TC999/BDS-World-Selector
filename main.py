@@ -36,7 +36,7 @@ class ConfigSwitcherApp(QMainWindow):
         self.tick_distance = self.read_tick_distance() # 模拟距离
         self.player_permission_level = self.read_player_permission_level() # 玩家权限
         self.texturepack_required = self.read_texturepack_required() # 强制材质包
-        self.log_file_enabled = self.read_log_file_enabled()  # 日志
+        self.log_file_enabled = self.read_log_file_enabled()  # 日志（BDS日志，不是本软件日志！）
 
         self.init_ui()
         self.init_menu()
