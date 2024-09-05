@@ -110,6 +110,9 @@
     - [x] 视距调整
     - [x] 模拟距离调整（滑块）
     - [x] 玩家权限
+    - [x] 允许作弊
+    - [x] 服务器端口修改
+    - [x] 强制指定材质包
 
 ## 软件界面截图
 ![截图](doc/软件界面截图.png)
@@ -149,7 +152,7 @@ pip install PyQt5
 - [ ] 隐藏选项（详见 [Minebbs](https://www.minebbs.com/threads/bedrock-dedicated-server-server-properties.1664/)）
 - [ ] 多语言适配（暂时只支持简体中文）
 - [ ] 代码优化（GPT写的屎山）
-- [ ] 代码分成几个文件（现在`main.py`已经有**500行**代码了）
+- [ ] 代码分成几个文件（现在`main.py`已经有**700行**代码了）
 - [ ] 每个存档单独配置文件（当前实现想法是在每个存档目录下都放一份`server.properties`文件）
 - [ ] 种子自动读取(读取存档`level.dat`文件)
 - [ ] 界面布局优化（GPT 写的……）
