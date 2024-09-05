@@ -1,5 +1,5 @@
 # BDS-World-Selector
-用于快速切换 Minecraft 基岩版服务端存档工具，使用 Python 编写
+用于快速切换 Minecraft 基岩版服务端存档工具，同时提供配置修改 GUI 界面，使用 Python 编写
 
 ## 介绍
 
