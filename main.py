@@ -226,6 +226,17 @@ class ConfigSwitcherApp(QMainWindow):
         log_save_button = QPushButton("保存")
         log_save_button.clicked.connect(self.save_log_file_enabled)
 
+        compression_threshold_label = QLabel("压缩阈值")
+        self.compression_threshold_edit = QLineEdit()
+        self.compression_threshold_edit.setText(str(self.read_compression_threshold()))
+        self.compression_threshold_edit.setValidator(QIntValidator(0, 65535))
+        compression_threshold_save_button = QPushButton("保存")
+        compression_threshold_save_button.clicked.connect(self.save_compression_threshold)
+
+        # 将这些部件添加到布局中
+        form_layout.addRow(compression_threshold_label, self.compression_threshold_edit)
+        form_layout.addWidget(compression_threshold_save_button)
+
         # 将控件添加到布局中
         form_layout.addRow(log_label, self.log_checkbox)
         form_layout.addRow("", log_save_button)
@@ -720,6 +731,29 @@ class ConfigSwitcherApp(QMainWindow):
 
             # 提示保存成功
             QMessageBox.information(self, self.tr("保存成功"), self.tr("日志设置已更新。"))
+
+    def read_compression_threshold(self):
+        if os.path.exists(self.config_file_path):
+            with open(self.config_file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.startswith("compression-threshold="):
+                        return int(line.split("=", 1)[1].strip())
+        return 0  # 默认值
+
+    def save_compression_threshold(self):
+        new_compression_threshold = self.compression_threshold_edit.text()
+
+        with open(self.config_file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        with open(self.config_file_path, 'w', encoding='utf-8') as f:
+            for line in lines:
+                if line.startswith("compression-threshold="):
+                    f.write(f"compression-threshold={new_compression_threshold}\n")
+                else:
+                    f.write(line)
+
+        QMessageBox.information(self, self.tr("保存成功"), self.tr("压缩阈值已更新。"))
 
     def update_config_file(self, key, value):
         try:
